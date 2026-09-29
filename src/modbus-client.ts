@@ -343,6 +343,14 @@ export default abstract class MBClient<S extends Stream.Duplex, Req extends Modb
     return this._requestHandler.customErrorRequest(err)
   }
 
+  /** Drop whatever is left in the receive buffer, e.g. the rest of a response whose request
+   * timed out.
+   * @returns {number} The number of discarded bytes.
+   */
+  public discardResponseBuffer (): number {
+    return this._responseHandler.discardBuffer()
+  }
+
   /** Parse responses of a function code with a custom handler instead of the built-in one.
    * The returned body is matched against the pending request as usual, so it has to carry
    * the function code of the request (or be an exception response).

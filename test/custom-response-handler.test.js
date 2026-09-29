@@ -155,6 +155,28 @@ describe('Custom Response Handler Tests.', function () {
       ]))
     })
 
+    it('should parse the next response after discarding a truncated one', function (done) {
+      const client = new Modbus.client.TCP(socket)
+
+      socket.emit('connect')
+
+      /* the rest of a frame whose request was given up on */
+      socket.emit('data', Buffer.from([0x00, 0x07, 0x00, 0x00, 0x00, 0x05]))
+      assert.equal(6, client.discardResponseBuffer())
+      assert.equal(0, client.discardResponseBuffer())
+
+      client.readHoldingRegisters(0, 1)
+        .then(function (resp) {
+          assert.deepEqual([0x1234], resp.response.body.valuesAsArray)
+          done()
+        }).catch(done)
+
+      socket.emit('data', Buffer.from([
+        0x00, 0x01, 0x00, 0x00, 0x00, 0x05, 0x01,
+        0x03, 0x02, 0x12, 0x34
+      ]))
+    })
+
     it('should unregister a custom handler on the client', function () {
       const client = new Modbus.client.RTU(new EventEmitter(), 1)
       client.registerResponseHandler(0x03, singleRegisterHandler)

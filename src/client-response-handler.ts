@@ -27,6 +27,15 @@ export default abstract class ModbusClientResponseHandler<ResType extends MBAbst
     return this._messages.shift()
   }
 
+  /** Drop whatever is left in the receive buffer.
+   * @returns {number} The number of discarded bytes.
+   */
+  public discardBuffer (): number {
+    const discarded = this._buffer.length
+    this._buffer = Buffer.alloc(0)
+    return discarded
+  }
+
   /** Parse responses of a function code with a custom handler instead of the built-in one. */
   public registerResponseHandler (fc: number, handler: IResponseBodyHandler) {
     this._customHandlers.set(fc, handler)
