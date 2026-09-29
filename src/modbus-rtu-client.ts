@@ -1,5 +1,4 @@
 
-import { LIMITS } from './constants'
 import MBClient from './modbus-client.js'
 import ModbusRTUClientRequestHandler from './rtu-client-request-handler.js'
 import ModbusRTUClientResponseHandler from './rtu-client-response-handler.js'
@@ -28,18 +27,12 @@ export default class ModbusRTUClient extends MBClient<SerialPort, ModbusRTUReque
    * @param {SerialPort} socket The serial Socket.
    * @param {number} address The address of the serial client.
    * @param {number} [timeout=5000]
-   * @param {number} [maxBufferSize=LIMITS.RTU_ADU_MAX] The number of bytes the receive buffer may hold
    */
-  constructor (
-    socket: SerialPort,
-    address: number,
-    timeout = 5000,
-    maxBufferSize: number = LIMITS.RTU_ADU_MAX
-  ) {
+  constructor (socket: SerialPort, address: number, timeout = 5000) {
     super(socket)
 
     this._requestHandler = new ModbusRTUClientRequestHandler(socket, address, timeout)
-    this._responseHandler = new ModbusRTUClientResponseHandler(maxBufferSize)
+    this._responseHandler = new ModbusRTUClientResponseHandler()
   }
 
   public get slaveId () {
