@@ -21,7 +21,7 @@ export default class ModbusRTUClientResponseHandler extends ModbusClientResponse
     debug('buffer', this._buffer)
 
     do {
-      const response = ModbusRTUResponse.fromBuffer(this._buffer)
+      const response = ModbusRTUResponse.fromBuffer(this._buffer, this._parseBody)
 
       if (!response) {
         debug('not enough data available to parse')

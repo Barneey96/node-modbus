@@ -49,7 +49,10 @@ export default class ModbusRTUResponse<ResBody extends ModbusResponseBody = Modb
       modbusBody)
   }
 
-  public static fromBuffer (buffer: Buffer) {
+  public static fromBuffer (
+    buffer: Buffer,
+    parseBody: (body: Buffer) => ModbusResponseBody | null = ResponseFactory.fromBuffer
+  ) {
     if (buffer.length < 1) {
       return null
     }
@@ -58,7 +61,7 @@ export default class ModbusRTUResponse<ResBody extends ModbusResponseBody = Modb
 
     debug('address', address, 'buffer', buffer)
 
-    const body = ResponseFactory.fromBuffer(buffer.slice(1))
+    const body = parseBody(buffer.slice(1))
 
     if (!body) {
       return null

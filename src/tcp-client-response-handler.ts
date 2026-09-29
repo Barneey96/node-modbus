@@ -23,7 +23,7 @@ export default class ModbusTCPClientResponseHandler extends ModbusClientResponse
     debug('buffer', this._buffer)
 
     do {
-      const response = ModbusTCPResponse.fromBuffer(this._buffer)
+      const response = ModbusTCPResponse.fromBuffer(this._buffer, this._parseBody)
 
       if (!response) {
         debug('not enough data available to parse')

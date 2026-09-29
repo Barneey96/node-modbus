@@ -70,7 +70,10 @@ export default class ModbusTCPResponse<ResBody extends ModbusResponseBody = Modb
    * @param {Buffer} buffer
    * @returns {ModbusTCPResponse} Returns null if not enough data located in the buffer.
    */
-  public static fromBuffer (buffer: Buffer) {
+  public static fromBuffer (
+    buffer: Buffer,
+    parseBody: (body: Buffer) => ModbusResponseBody | null = ResponseFactory.fromBuffer
+  ) {
     try {
       const id = buffer.readUInt16BE(0)
       const protocol = buffer.readUInt16BE(2)
@@ -80,7 +83,7 @@ export default class ModbusTCPResponse<ResBody extends ModbusResponseBody = Modb
       debug('tcp header complete, id', id, 'protocol', protocol, 'length', length, 'unitId', unitId)
       debug('buffer', buffer)
 
-      const body = ResponseFactory.fromBuffer(buffer.slice(7, 7 + length - 1))
+      const body = parseBody(buffer.slice(7, 7 + length - 1))
 
       if (!body) {
         debug('not enough data for a response body')

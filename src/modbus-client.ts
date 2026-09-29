@@ -22,6 +22,7 @@ import MBClientResponseHandler from './client-response-handler.js'
 import { UserRequestError } from './errors'
 import { CastRequestBody } from './request-response-map'
 import { WriteMultipleCoilsResponseBody } from './response'
+import IResponseBodyHandler from './response/response-body-handler.js'
 import { PromiseUserRequest } from './user-request.js'
 
 /** Common Modbus Client
@@ -340,6 +341,24 @@ export default abstract class MBClient<S extends Stream.Duplex, Req extends Modb
    */
   public customErrorRequest (err: UserRequestError<any, any>) {
     return this._requestHandler.customErrorRequest(err)
+  }
+
+  /** Parse responses of a function code with a custom handler instead of the built-in one.
+   * The returned body is matched against the pending request as usual, so it has to carry
+   * the function code of the request (or be an exception response).
+   * @param {number} fc Function code
+   * @param {IResponseBodyHandler} handler Object with a fromBuffer (buffer) method.
+   */
+  public registerResponseHandler (fc: number, handler: IResponseBodyHandler) {
+    this._responseHandler.registerResponseHandler(fc, handler)
+  }
+
+  /** Remove a custom response handler and go back to the built-in parser.
+   * @param {number} fc Function code
+   * @returns {boolean} true if a custom handler was removed.
+   */
+  public unregisterResponseHandler (fc: number) {
+    return this._responseHandler.unregisterResponseHandler(fc)
   }
 
   private _onData (data: Buffer) {
